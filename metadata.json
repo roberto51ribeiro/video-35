@@ -1,0 +1,7 @@
+{
+  "name": "Video 35",
+  "description": "Crie vídeos incríveis a partir de duas imagens e um prompt usando a IA do Veo. Transforme suas fotos em narrativas visuais dinâmicas.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
