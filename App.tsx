@@ -21,7 +21,7 @@ const App: React.FC = () => {
 
   const checkApiKey = useCallback(async () => {
     try {
-      if (window.aistudio && await window.aistudio.hasSelectedApiKey()) {
+      if (process.env.API_KEY || (window.aistudio && await window.aistudio.hasSelectedApiKey())) {
         setStatus('idle');
       }
     } catch (e) {
@@ -35,12 +35,12 @@ const App: React.FC = () => {
 
   const handleSelectKey = async () => {
     try {
-        await window.aistudio.openSelectKey();
-        // Assume success to avoid race condition and immediately show the app.
-        setStatus('idle');
+      await window.aistudio.openSelectKey();
+      // Assume success to avoid race condition and immediately show the app.
+      setStatus('idle');
     } catch (e) {
-        console.error("Error opening select key dialog", e);
-        setError("Não foi possível abrir a seleção de chave de API.");
+      console.error("Error opening select key dialog", e);
+      setError("Não foi possível abrir a seleção de chave de API.");
     }
   };
 
@@ -67,7 +67,7 @@ const App: React.FC = () => {
     }
     setShowCameraFor(null);
   };
-  
+
   const handleGenerateVideo = async () => {
     if (!startImage || !endImage || !prompt) {
       setError('Por favor, selecione duas imagens e insira um prompt.');
@@ -91,7 +91,7 @@ const App: React.FC = () => {
       setError(errorMessage);
     }
   };
-  
+
   const resetApp = () => {
     setStartImage(null);
     setEndImage(null);
@@ -112,10 +112,10 @@ const App: React.FC = () => {
             <h1 className="text-4xl font-bold mb-4">Bem-vindo ao Video 35</h1>
             <p className="text-lg text-gray-400 mb-8 max-w-2xl">Para começar a criar vídeos com IA, você precisa selecionar uma chave de API do Google AI Studio.</p>
             <button
-                onClick={handleSelectKey}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg text-lg transition-transform transform hover:scale-105"
+              onClick={handleSelectKey}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg text-lg transition-transform transform hover:scale-105"
             >
-                Selecionar Chave de API
+              Selecionar Chave de API
             </button>
             <p className="text-sm text-gray-500 mt-4">Ao usar este serviço, você concorda com os termos e custos associados. <a href="https://ai.google.dev/gemini-api/docs/billing" target="_blank" rel="noopener noreferrer" className="underline hover:text-indigo-400">Saiba mais sobre o faturamento.</a></p>
             {error && <p className="text-red-500 mt-4">{error}</p>}
@@ -138,7 +138,7 @@ const App: React.FC = () => {
               <div className="w-full lg:w-1/3">
                 <ImageSelector label="Imagem Inicial" image={startImage} onImageSelected={(f) => handleImageSelected(f, 'start')} onOpenCamera={() => setShowCameraFor('start')} />
               </div>
-              
+
               <div className="w-full lg:w-1/3 flex flex-col gap-6 items-center">
                 <textarea
                   value={prompt}
@@ -147,12 +147,12 @@ const App: React.FC = () => {
                   className="w-full h-36 p-4 bg-gray-900 border-2 border-gray-700 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-gray-200 resize-none"
                 />
                 <div className="flex flex-col items-center gap-3">
-                    <label className="font-semibold text-gray-300">Proporção do Vídeo</label>
-                    <div className="flex gap-4 p-2 bg-gray-900 rounded-full border border-gray-700">
-                        <button onClick={() => setAspectRatio('16:9')} className={`p-2 rounded-full transition-colors ${aspectRatio === '16:9' ? 'bg-indigo-600 text-white' : 'hover:bg-gray-700 text-gray-400'}`}><LandscapeIcon/></button>
-                        <button onClick={() => setAspectRatio('9:16')} className={`p-2 rounded-full transition-colors ${aspectRatio === '9:16' ? 'bg-indigo-600 text-white' : 'hover:bg-gray-700 text-gray-400'}`}><PortraitIcon/></button>
-                        <button onClick={() => setAspectRatio('1:1')} className={`p-2 rounded-full transition-colors ${aspectRatio === '1:1' ? 'bg-indigo-600 text-white' : 'hover:bg-gray-700 text-gray-400'}`}><SquareIcon/></button>
-                    </div>
+                  <label className="font-semibold text-gray-300">Proporção do Vídeo</label>
+                  <div className="flex gap-4 p-2 bg-gray-900 rounded-full border border-gray-700">
+                    <button onClick={() => setAspectRatio('16:9')} className={`p-2 rounded-full transition-colors ${aspectRatio === '16:9' ? 'bg-indigo-600 text-white' : 'hover:bg-gray-700 text-gray-400'}`}><LandscapeIcon /></button>
+                    <button onClick={() => setAspectRatio('9:16')} className={`p-2 rounded-full transition-colors ${aspectRatio === '9:16' ? 'bg-indigo-600 text-white' : 'hover:bg-gray-700 text-gray-400'}`}><PortraitIcon /></button>
+                    <button onClick={() => setAspectRatio('1:1')} className={`p-2 rounded-full transition-colors ${aspectRatio === '1:1' ? 'bg-indigo-600 text-white' : 'hover:bg-gray-700 text-gray-400'}`}><SquareIcon /></button>
+                  </div>
                 </div>
               </div>
 
@@ -162,15 +162,15 @@ const App: React.FC = () => {
             </main>
 
             <footer className="p-8 mt-auto flex flex-col items-center">
-                {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
-                <button
-                    onClick={handleGenerateVideo}
-                    disabled={isGenerateButtonDisabled}
-                    className="flex items-center gap-3 w-full max-w-sm justify-center text-xl font-bold py-4 px-8 rounded-full text-white bg-gradient-to-r from-purple-600 to-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed hover:from-purple-700 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105 disabled:scale-100 shadow-lg shadow-indigo-500/20"
-                >
-                    <SparklesIcon/>
-                    Gerar Vídeo
-                </button>
+              {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
+              <button
+                onClick={handleGenerateVideo}
+                disabled={isGenerateButtonDisabled}
+                className="flex items-center gap-3 w-full max-w-sm justify-center text-xl font-bold py-4 px-8 rounded-full text-white bg-gradient-to-r from-purple-600 to-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed hover:from-purple-700 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105 disabled:scale-100 shadow-lg shadow-indigo-500/20"
+              >
+                <SparklesIcon />
+                Gerar Vídeo
+              </button>
             </footer>
           </div>
         );
